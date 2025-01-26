@@ -1,5 +1,10 @@
 if status is-interactive
-    # Commands to run in interactive sessions can go here
+    # Unbind Ctrl + a to free it for Tmux's prefix
+    bind --erase \ca
+    bind --erase \cb
+
+    # Bind Ctrl + b to beginning of line
+    bind \cb beginning-of-line
 end
 
 # Set up fzf key bindings
