@@ -13,6 +13,12 @@ fzf --fish | source
 # Enable zoxyde
 zoxide init fish | source
 
+# Load custom Starship transient prompt hook functions
+source $XDG_CONFIG_HOME/fish/functions/transient_starship.fish
+
 # Enable Starship prompt
 starship init fish | source
+
+# Enable transient prompt behaviour
+enable_transience
 

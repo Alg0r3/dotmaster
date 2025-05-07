@@ -11,7 +11,7 @@ $time\
 $line_break\
 $status\
 $git_state\
-[ ](bold fg:peach)\
+$character\
 """
 
 [directory]
@@ -68,6 +68,9 @@ disabled = false
 disabled = false
 symbol = " "
 format = "[$symbol$status ]($style)"
+
+[character]
+format = "[ ](bold fg:peach)"
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"
