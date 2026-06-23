@@ -4,37 +4,77 @@ A curated collection of my personal configuration files, managed with [GNU Stow]
 
 ## Prerequisites
 
-Ensure that GNU Stow is installed on your system. You can install it using your favourite package manager:
+Install GNU Stow and GNU Make.
 
 ### Debian/Ubuntu
 
-```
-sudo apt install stow
+```bash
+sudo apt install stow make
 ```
 
 ### Fedora
 
-```
-sudo dnf install stow
+```bash
+sudo dnf install stow make
 ```
 
 ## Setup
 
-1. Clone this repository:
+Clone this repository:
 
-```
+```bash
 git clone https://github.com/Alg0r3/dotmaster.git
-```
-
-2. Navigate to the Directory:
-
-```
 cd dotmaster
 ```
 
-3. Use Stow to create symbolic links:
+Install or update all managed dotfiles:
 
+```bash
+make install
 ```
-stow .
+
+## Commands
+
+Show available commands:
+
+```bash
+make help
 ```
+
+Check required tools and the dotfiles environment:
+
+```bash
+make doctor
+```
+
+## Structure
+
+This repository uses GNU Stow packages grouped by target directory.
+
+### `~/.config` packages
+
+These packages are installed into `~/.config`:
+- fish
+- starship
+- tmux
+- wezterm
+
+For example:
+
+```text
+dotmaster/fish -> ~/.config/fish
+```
+
+### `$HOME` packages
+
+These packages are installed into `$HOME`:
+- home
+
+For example:
+
+```text
+dotmaster/home/.local/shims -> ~/.local/shims
+```
+
+The `home` package is used for files that do not belong under `~/.config`.
 
