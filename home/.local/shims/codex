@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly codex_binary="$HOME/.local/bin/codex"
+# The real Codex executable is expected here.
+# The guarded shim itself should live in ~/.local/shims/codex
+
+readonly -a workspace_roots=(
+    "$HOME/Projects/Personal"
+    "$HOME/Projects/Work"
+)
+
+current_directory_path="$(pwd -P)"
+
+declare -a existing_workspace_root_paths=()
+declare -a missing_workspace_roots=()
+
+print_allowed_roots() {
+    for workspace_root_path in "${existing_workspace_root_paths[@]}"; do
+        printf '│    %s\n' "$workspace_root_path"
+    done
+}
+
+print_configured_roots() {
+    for workspace_root in "${workspace_roots[@]}"; do
+        printf '│    %s\n' "$workspace_root"
+    done
+}
+
+print_missing_roots() {
+    for missing_workspace_root in "${missing_workspace_roots[@]}"; do
+        printf '│    %s\n' "$missing_workspace_root"
+    done
+}
+
+print_missing_codex_binary_message() {
+    cat <<EOF
+╭─ Codex shim error
+│
+│  The real Codex executable was not found or is not executable:
+│    $codex_binary
+│
+│  Expected layout:
+│    ~/.local/shims/codex   → guarded shim
+│    ~/.local/bin/codex     → real Codex executable
+╰─
+EOF
+}
+
+print_missing_workspace_roots_message() {
+    cat <<EOF
+╭─ Codex shim error
+│
+│  None of the configured workspace roots exist.
+│
+│  Configured roots:
+EOF
+
+    print_configured_roots
+
+    cat <<EOF
+╰─
+EOF
+}
+
+print_refusal_message() {
+    cat <<EOF
+╭─ Codex blocked
+│
+│  Reason:
+│    Codex must be started from a project directory inside one of:
+EOF
+
+    print_allowed_roots
+
+    cat <<EOF
+│
+│  Current directory:
+│    $current_directory_path
+│
+│  Example:
+│    cd ${existing_workspace_root_paths[0]}/my-project
+│    codex
+│
+│  Note:
+│    The configured workspace roots themselves are not allowed.
+EOF
+
+    if ((${#missing_workspace_roots[@]} > 0)); then
+        cat <<EOF
+│
+│  Ignored missing configured roots:
+EOF
+
+        print_missing_roots
+    fi
+
+    cat <<EOF
+╰─
+EOF
+}
+
+if [[ ! -x "$codex_binary" ]]; then
+    print_missing_codex_binary_message >&2
+    exit 127
+fi
+
+codex_binary_path="$(realpath "$codex_binary")"
+
+for workspace_root in "${workspace_roots[@]}"; do
+    if [[ -d "$workspace_root" ]]; then
+        existing_workspace_root_paths+=("$(realpath "$workspace_root")")
+    else
+        missing_workspace_roots+=("$workspace_root")
+    fi
+done
+
+if ((${#existing_workspace_root_paths[@]} == 0)); then
+    print_missing_workspace_roots_message >&2
+    exit 126
+fi
+
+is_inside_allowed_project_directory=false
+
+for workspace_root_path in "${existing_workspace_root_paths[@]}"; do
+    if [[ "$current_directory_path" == "$workspace_root_path"/* ]]; then
+        is_inside_allowed_project_directory=true
+        break
+    fi
+done
+
+if [[ "$is_inside_allowed_project_directory" != true ]]; then
+    print_refusal_message >&2
+    exit 126
+fi
+
+exec "$codex_binary_path" "$@"
+
