@@ -10,15 +10,17 @@ HOME_PACKAGES := home
 
 .PHONY: dry-run
 dry-run: ## Preview changes without creating or deleting symlinks.
-	mkdir --parents "$(CONFIG_TARGET)"
-	mkdir --parents "$(HOME_TARGET)/.local"
+	@mkdir --parents "$(CONFIG_TARGET)"
+	@mkdir --parents "$(HOME_TARGET)/.local"
+	@mkdir --parents "$(HOME_TARGET)/.bashrc.d"
 	$(STOW) --no --verbose --restow --target="$(CONFIG_TARGET)" $(CONFIG_PACKAGES)
 	$(STOW) --no --verbose --restow --target="$(HOME_TARGET)" $(HOME_PACKAGES)
 
 .PHONY: install
 install: ## Install or update all managed dotfiles.
-	mkdir --parents "$(CONFIG_TARGET)"
-	mkdir --parents "$(HOME_TARGET)/.local"
+	@mkdir --parents "$(CONFIG_TARGET)"
+	@mkdir --parents "$(HOME_TARGET)/.local"
+	@mkdir --parents "$(HOME_TARGET)/.bashrc.d"
 	$(STOW) --restow --target="$(CONFIG_TARGET)" $(CONFIG_PACKAGES)
 	$(STOW) --restow --target="$(HOME_TARGET)" $(HOME_PACKAGES)
 

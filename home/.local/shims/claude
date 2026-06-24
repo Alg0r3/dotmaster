@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly workspace_root="$HOME/Projects/Work"
+readonly claude_binary="$HOME/.local/bin/claude"
+# The real Claude executable is expected here
+# The guarded shim itself should live in ~/.local/shims/claude
+
+if [[ ! -d "$workspace_root" ]]; then
+    printf 'Claude blocked: workspace root does not exist: %s\n' "$workspace_root" >&2
+    exit 126
+fi
+
+workspace_root_path="$(realpath "$workspace_root")"
+current_directory_path="$(pwd -P)"
+
+print_refusal_message() {
+    cat <<EOF
+╭─ Claude blocked
+│
+│  Reason:
+│    Claude must be started from a project directory inside:
+│    $workspace_root_path
+│
+│  Current directory:
+│    $current_directory_path
+│
+│  Example:
+│    cd $workspace_root_path/my-project
+│    claude
+│
+│  Note:
+│    The Work directory itself is not allowed.
+╰─
+EOF
+}
+
+print_shim_error_message() {
+    cat <<EOF
+╭─ Claude shim error
+│
+│  The real Claude executable was not found or is not executable:
+│    $claude_binary
+│
+│  Expected layout:
+│    ~/.local/shims/claude   → guarded shim
+│    ~/.local/bin/claude     → real Claude executable
+╰─
+EOF
+}
+
+if [[ ! -x "$claude_binary" ]]; then
+    print_shim_error_message >&2
+    exit 127
+fi
+
+claude_binary_path="$(realpath "$claude_binary")"
+
+if [[ "$current_directory_path" != "$workspace_root_path"/* ]]; then
+    print_refusal_message >&2
+    exit 126
+fi
+
+exec "$claude_binary_path" "$@"
+
