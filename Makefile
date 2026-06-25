@@ -5,22 +5,34 @@ STOW := stow
 CONFIG_TARGET := $(HOME)/.config
 HOME_TARGET := $(HOME)
 
+REAL_TARGET_DIRECTORIES := \
+	$(CONFIG_TARGET) \
+	$(HOME_TARGET)/.bashrc.d \
+	$(HOME_TARGET)/.local \
+	$(HOME_TARGET)/.claude
+
 CONFIG_PACKAGES := fish starship tmux wezterm
 HOME_PACKAGES := home
 
+.PHONY: prepare-targets
+prepare-targets:
+	@for target_directory in $(REAL_TARGET_DIRECTORIES); \
+	do \
+		if [ -L "$$target_directory" ]; then \
+			echo "Refusing to continue: $$target_directory is a symlink."; \
+			echo "It must be a real directory before running stow."; \
+			exit 1; \
+		fi; \
+		mkdir --parents "$$target_directory"; \
+	done
+
 .PHONY: dry-run
-dry-run: ## Preview changes without creating or deleting symlinks.
-	@mkdir --parents "$(CONFIG_TARGET)"
-	@mkdir --parents "$(HOME_TARGET)/.local"
-	@mkdir --parents "$(HOME_TARGET)/.bashrc.d"
+dry-run: prepare-targets ## Preview Stow symlink changes without applying them.
 	$(STOW) --no --verbose --restow --target="$(CONFIG_TARGET)" $(CONFIG_PACKAGES)
 	$(STOW) --no --verbose --restow --target="$(HOME_TARGET)" $(HOME_PACKAGES)
 
 .PHONY: install
-install: ## Install or update all managed dotfiles.
-	@mkdir --parents "$(CONFIG_TARGET)"
-	@mkdir --parents "$(HOME_TARGET)/.local"
-	@mkdir --parents "$(HOME_TARGET)/.bashrc.d"
+install: prepare-targets ## Install or update all managed dotfiles.
 	$(STOW) --restow --target="$(CONFIG_TARGET)" $(CONFIG_PACKAGES)
 	$(STOW) --restow --target="$(HOME_TARGET)" $(HOME_PACKAGES)
 
@@ -50,4 +62,17 @@ doctor: ## Check required tools and dotfiles environment.
 	@echo "Package groups:"
 	@echo "  CONFIG_PACKAGES: $(CONFIG_PACKAGES)"
 	@echo "  HOME_PACKAGES:   $(HOME_PACKAGES)"
+	@echo
+	@echo "Directories that must remain real directories:"
+	@for target_directory in $(REAL_TARGET_DIRECTORIES); \
+	do \
+		if [ -L "$$target_directory" ]; then \
+			echo "  $$target_directory: symlink ❌"; \
+			exit 1; \
+		elif [ -d "$$target_directory" ]; then \
+			echo "  $$target_directory: real directory ✅"; \
+		else \
+			echo "  $$target_directory: missing"; \
+		fi; \
+	done
 
