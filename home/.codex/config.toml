@@ -1,0 +1,166 @@
+# ~/.codex/config.toml
+
+# Safe default: review/explain without editing files.
+# Use /permissions inside Codex when you intentionally want to allow edits.
+default_permissions = "readonly-review"
+
+# Keep approvals visible. Do not use "never" for normal interactive work.
+approval_policy = "on-request"
+
+# Cached web search is useful for docs while keeping shell/network access separate.
+web_search = "cached"
+
+# Codex reads AGENTS.md by default.
+# Keep this at the default unless your project instructions intentionally grow.
+project_doc_max_bytes = 32768
+
+# Do not add Codex co-author trailers if Codex commit features are used.
+commit_attribution = ""
+
+# Do not leak random environment variables such as API keys into spawned commands.
+# Add more variables only when a tool genuinely needs them.
+[shell_environment_policy]
+include_only = [
+  "HOME",
+  "PATH",
+  "USER",
+  "SHELL",
+  "TERM",
+  "LANG",
+  "LC_ALL",
+  "XDG_CONFIG_HOME",
+  "XDG_DATA_HOME",
+  "XDG_CACHE_HOME"
+]
+
+# ---------------------------------------------------------------------
+# Profile 1: default review mode
+# ---------------------------------------------------------------------
+
+[permissions.readonly-review]
+description = "Read-only review mode. No file edits, no command network."
+extends = ":read-only"
+
+[permissions.readonly-review.filesystem]
+":root" = "deny"
+":minimal" = "read"
+glob_scan_max_depth = 4
+
+[permissions.readonly-review.filesystem.":workspace_roots"]
+"." = "read"
+
+# Secrets should not be readable even inside a workspace.
+".env" = "deny"
+".env.*" = "deny"
+".npmrc" = "deny"
+".netrc" = "deny"
+"auth.json" = "deny"
+"credentials.json" = "deny"
+"*.pem" = "deny"
+"*.key" = "deny"
+"id_rsa" = "deny"
+"id_ed25519" = "deny"
+"**/.env" = "deny"
+"**/.env.*" = "deny"
+"**/.npmrc" = "deny"
+"**/.netrc" = "deny"
+"**/auth.json" = "deny"
+"**/credentials.json" = "deny"
+"**/*.pem" = "deny"
+"**/*.key" = "deny"
+"**/id_rsa" = "deny"
+"**/id_ed25519" = "deny"
+"**/secrets/**" = "deny"
+"**/.ssh/**" = "deny"
+"**/.aws/**" = "deny"
+"**/.gcloud/**" = "deny"
+"**/.docker/config.json" = "deny"
+"**/.config/gh/hosts.yml" = "deny"
+
+[permissions.readonly-review.network]
+enabled = false
+
+# ---------------------------------------------------------------------
+# Profile 2: explicit editing mode
+# ---------------------------------------------------------------------
+# Switch to this only when you actually want Codex to edit the repo.
+
+[permissions.workspace-safe]
+description = "Workspace edit mode with secret-deny rules and no command network."
+extends = ":workspace"
+
+[permissions.workspace-safe.filesystem]
+":root" = "deny"
+":minimal" = "read"
+glob_scan_max_depth = 4
+
+[permissions.workspace-safe.filesystem.":workspace_roots"]
+"." = "write"
+
+# Secrets should not be readable even inside a writable workspace.
+".env" = "deny"
+".env.*" = "deny"
+".npmrc" = "deny"
+".netrc" = "deny"
+"auth.json" = "deny"
+"credentials.json" = "deny"
+"*.pem" = "deny"
+"*.key" = "deny"
+"id_rsa" = "deny"
+"id_ed25519" = "deny"
+"**/.env" = "deny"
+"**/.env.*" = "deny"
+"**/.npmrc" = "deny"
+"**/.netrc" = "deny"
+"**/auth.json" = "deny"
+"**/credentials.json" = "deny"
+"**/*.pem" = "deny"
+"**/*.key" = "deny"
+"**/id_rsa" = "deny"
+"**/id_ed25519" = "deny"
+"**/secrets/**" = "deny"
+"**/.ssh/**" = "deny"
+"**/.aws/**" = "deny"
+"**/.gcloud/**" = "deny"
+"**/.docker/config.json" = "deny"
+"**/.config/gh/hosts.yml" = "deny"
+
+[permissions.workspace-safe.network]
+enabled = false
+
+# ---------------------------------------------------------------------
+# Profile 3: rare docs/dependency mode
+# ---------------------------------------------------------------------
+# Use only when you deliberately need command-level network access,
+# e.g. fetching package metadata or installing dependencies.
+# Prefer one-off CLI overrides instead of making this the default.
+
+[permissions.workspace-docs-net]
+description = "Workspace edit mode with limited public documentation/package network access."
+extends = "workspace-safe"
+
+[permissions.workspace-docs-net.network]
+enabled = true
+
+[permissions.workspace-docs-net.network.domains]
+"github.com" = "allow"
+"*.github.com" = "allow"
+"raw.githubusercontent.com" = "allow"
+"objects.githubusercontent.com" = "allow"
+"docs.github.com" = "allow"
+"www.gnu.org" = "allow"
+"fishshell.com" = "allow"
+"starship.rs" = "allow"
+"wezterm.org" = "allow"
+"tmux.github.io" = "allow"
+"npmjs.com" = "allow"
+"www.npmjs.com" = "allow"
+"registry.npmjs.org" = "allow"
+"packagist.org" = "allow"
+"repo.packagist.org" = "allow"
+
+[projects."/home/tahitala/Projects/Personal/dotmaster"]
+trust_level = "trusted"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1

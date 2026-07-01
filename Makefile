@@ -9,7 +9,8 @@ REAL_TARGET_DIRECTORIES := \
 	$(CONFIG_TARGET) \
 	$(HOME_TARGET)/.bashrc.d \
 	$(HOME_TARGET)/.local \
-	$(HOME_TARGET)/.claude
+	$(HOME_TARGET)/.claude \
+	$(HOME_TARGET)/.codex
 
 CONFIG_PACKAGES := fish starship tmux wezterm
 HOME_PACKAGES := home
