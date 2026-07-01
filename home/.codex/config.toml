@@ -44,6 +44,7 @@ extends = ":read-only"
 [permissions.readonly-review.filesystem]
 ":root" = "deny"
 ":minimal" = "read"
+"~/.codex/packages/standalone" = "read"
 glob_scan_max_depth = 4
 
 [permissions.readonly-review.filesystem.":workspace_roots"]
@@ -92,6 +93,7 @@ extends = ":workspace"
 [permissions.workspace-safe.filesystem]
 ":root" = "deny"
 ":minimal" = "read"
+"~/.codex/packages/standalone" = "read"
 glob_scan_max_depth = 4
 
 [permissions.workspace-safe.filesystem.":workspace_roots"]
@@ -164,3 +166,4 @@ trust_level = "trusted"
 
 [tui.model_availability_nux]
 "gpt-5.5" = 1
+
