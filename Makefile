@@ -57,14 +57,6 @@ uninstall: ## Remove all managed symlinks.
 	$(STOW) --delete --target="$(CONFIG_TARGET)" $(CONFIG_PACKAGES)
 	$(STOW) --delete --target="$(HOME_TARGET)" $(HOME_PACKAGES)
 
-.PHONY: help
-help: ## Show this help message.
-	@echo "Usage:"
-	@echo "  make <target>"
-	@echo ""
-	@echo "Commands:"
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-
 .PHONY: doctor
 doctor: ## Check required tools and dotfiles environment.
 	@command -v stow >/dev/null || { echo "Missing dependency: stow"; exit 1; }
@@ -91,3 +83,12 @@ doctor: ## Check required tools and dotfiles environment.
 			echo "  $$target_directory: missing"; \
 		fi; \
 	done
+
+.PHONY: help
+help: ## Show this help message.
+	@echo "Usage:"
+	@echo "  make <target>"
+	@echo ""
+	@echo "Commands:"
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
