@@ -64,11 +64,15 @@ Prefer read-only inspection commands first:
 - `find`
 - project-specific test/lint commands when known
 
+Prefer long-form command arguments when available and not deprecated, for example `command --query` instead of `command -q`.
+
 ## AI-assisted workflow
 
 Do not hide uncertainty.
 
 If the task is ambiguous, state the ambiguity and suggest the safest interpretation.
+
+If sandboxing or permissions make verification unreliable, say so clearly and ask me to run the command manually instead of repeatedly retrying.
 
 When I am learning a technology, act as a coach:
 
@@ -77,3 +81,6 @@ When I am learning a technology, act as a coach:
 - review my code
 - avoid writing the final implementation unless I explicitly ask
 
+## Git
+
+Use Conventional Commits for commit messages.

@@ -27,7 +27,21 @@ git clone https://github.com/Alg0r3/dotmaster.git
 cd dotmaster
 ```
 
-Install or update all managed dotfiles:
+Check the local environment:
+
+```bash
+make doctor
+```
+
+Preview the Stow symlink changes:
+
+```bash
+make dry-run
+```
+
+If the preview reports a missing target directory, create that directory first or review the directory list from `make doctor`.
+
+Install or update all managed dotfiles after reviewing the preview:
 
 ```bash
 make install
@@ -46,6 +60,14 @@ Check required tools and the dotfiles environment:
 ```bash
 make doctor
 ```
+
+Preview Stow symlink changes without applying them:
+
+```bash
+make dry-run
+```
+
+This command is read-only and expects target directories to already exist.
 
 ## Structure
 
@@ -77,4 +99,3 @@ dotmaster/home/.local/shims -> ~/.local/shims
 ```
 
 The `home` package is used for files that do not belong under `~/.config`.
-

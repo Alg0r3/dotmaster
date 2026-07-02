@@ -27,10 +27,25 @@ prepare-targets:
 		mkdir --parents "$$target_directory"; \
 	done
 
+.PHONY: check-targets
+check-targets:
+	@for target_directory in $(REAL_TARGET_DIRECTORIES); \
+	do \
+		if [ -L "$$target_directory" ]; then \
+			echo "Refusing to continue: $$target_directory is a symlink."; \
+			echo "It must be a real directory before running stow."; \
+			exit 1; \
+		elif [ ! -d "$$target_directory" ]; then \
+			echo "Refusing to continue: $$target_directory does not exist."; \
+			echo "Create the missing directory before running a dry run."; \
+			exit 1; \
+		fi; \
+	done
+
 .PHONY: dry-run
-dry-run: prepare-targets ## Preview Stow symlink changes without applying them.
-	$(STOW) --no --verbose --restow --target="$(CONFIG_TARGET)" $(CONFIG_PACKAGES)
-	$(STOW) --no --verbose --restow --target="$(HOME_TARGET)" $(HOME_PACKAGES)
+dry-run: check-targets ## Preview Stow symlink changes without applying them.
+	$(STOW) --simulate --verbose --restow --target="$(CONFIG_TARGET)" $(CONFIG_PACKAGES)
+	$(STOW) --simulate --verbose --restow --target="$(HOME_TARGET)" $(HOME_PACKAGES)
 
 .PHONY: install
 install: prepare-targets ## Install or update all managed dotfiles.
@@ -76,4 +91,3 @@ doctor: ## Check required tools and dotfiles environment.
 			echo "  $$target_directory: missing"; \
 		fi; \
 	done
-

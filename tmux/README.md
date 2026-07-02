@@ -4,6 +4,8 @@ This directory contains the configuration files for [Tmux](https://github.com/tm
 
 ## Tmux Plugin Manager
 
+This setup uses [Tmux Plugin Manager (TPM)](https://github.com/tmux-plugins/tpm) for plugin management, while the Catppuccin theme is manually cloned and sourced.
+
 Install TPM:
 
 ```fish
@@ -16,12 +18,11 @@ Install plugins:
 prefix + I
 ```
 
-## Catppuccin installation for Tmux
+## Catppuccin Installation
 
-This setup does not use the [Tmux Plugin Manager (TPM)](https://github.com/tmux-plugins/tpm), the Catppuccin theme is manually cloned and sourced:
+Install the Catppuccin theme:
 
 ```fish
 mkdir -p ~/.config/tmux/plugins/catppuccin
 git clone -b v2.1.2 https://github.com/catppuccin/tmux.git ~/.config/tmux/plugins/catppuccin/tmux
 ```
-

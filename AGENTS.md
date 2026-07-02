@@ -16,8 +16,8 @@ Safe commands:
 
 - `make help`
 - `make doctor`
+- `make dry-run`
 - `git status`
 - `git diff`
 
-Prefer reviewing the planned symlink or file changes before applying them.
-
+Prefer reviewing `make dry-run` output before applying symlink or file changes.
